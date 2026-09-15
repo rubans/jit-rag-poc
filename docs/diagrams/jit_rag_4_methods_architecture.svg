@@ -1,0 +1,219 @@
+<svg viewBox="0 0 1240 730" fill="none" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; border-radius:12px; font-family:'Geist', -apple-system, BlinkMacSystemFont, sans-serif;">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Instrument+Serif:ital@0;1&amp;display=swap');
+      .title { font-family: 'Instrument Serif', Georgia, serif; font-size: 24px; fill: #2d3142; }
+      .eyebrow { font-family: 'Geist Mono', monospace; font-size: 10px; fill: #eb6c36; font-weight: 600; letter-spacing: 0.16em; }
+      .header-text { font-family: 'Geist Mono', monospace; font-size: 9.5px; font-weight: 600; fill: #4f5d75; letter-spacing: 0.10em; }
+      .lane-tag { font-family: 'Geist Mono', monospace; font-size: 9px; font-weight: 600; }
+      .node-title { font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 600; fill: #2d3142; }
+      .node-sub { font-family: 'Geist Mono', monospace; font-size: 9px; fill: #7a8399; }
+      .metric-text { font-family: 'Geist Mono', monospace; font-size: 10px; fill: #2d3142; }
+    </style>
+    <marker id="arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#4f5d75"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#eb6c36"/>
+    </marker>
+  </defs>
+
+  <!-- Title block -->
+  <text x="24" y="32" class="eyebrow">JUST-IN-TIME RETRIEVAL-AUGMENTED GENERATION (JIT-RAG)</text>
+  <text x="24" y="58" class="title">4 Production Paradigms: Comparative Architectural &amp; Data Flow</text>
+
+  <!-- Super-headers: Ingestion vs Serving Phases -->
+  <rect x="220" y="74" width="560" height="22" rx="4" fill="#ede7f6" stroke="#b39ddb" stroke-width="1"/>
+  <text x="500" y="89" fill="#4527a0" font-family="'Geist Mono', monospace" font-size="9" font-weight="700" letter-spacing="0.12em" text-anchor="middle">&#9650; INGESTION PHASE (WRITE PIPELINE: STAGING, EXTRACTION, INDEXING)</text>
+
+  <rect x="790" y="74" width="430" height="22" rx="4" fill="#e8f5e9" stroke="#a5d6a7" stroke-width="1"/>
+  <text x="1005" y="89" fill="#1b5e20" font-family="'Geist Mono', monospace" font-size="9" font-weight="700" letter-spacing="0.12em" text-anchor="middle">&#9660; SERVING PHASE (READ PIPELINE: RETRIEVAL &amp; SYNTHESIS)</text>
+
+  <!-- Column Headers / Stages -->
+  <rect x="20" y="100" width="1200" height="32" fill="#f8f9fa" rx="6" stroke="rgba(45,49,66,0.12)"/>
+  <text x="305" y="120" class="header-text" text-anchor="middle">STAGE 1: STAGING / INPUT</text>
+  <line x1="395" y1="100" x2="395" y2="710" stroke="rgba(45,49,66,0.08)" stroke-dasharray="4,4"/>
+
+  <text x="490" y="120" class="header-text" text-anchor="middle">STAGE 2: EXTRACTION &amp; PARSING</text>
+  <line x1="590" y1="100" x2="590" y2="710" stroke="rgba(45,49,66,0.08)" stroke-dasharray="4,4"/>
+
+  <text x="685" y="120" class="header-text" text-anchor="middle">STAGE 3: EMBEDDING &amp; INDEXING</text>
+  <!-- Demarcation Line between Ingestion and Serving -->
+  <line x1="785" y1="74" x2="785" y2="710" stroke="#7986cb" stroke-width="1.5" stroke-dasharray="6,3"/>
+
+  <text x="880" y="120" class="header-text" text-anchor="middle">STAGE 4: RETRIEVAL</text>
+  <line x1="975" y1="100" x2="975" y2="710" stroke="rgba(45,49,66,0.08)" stroke-dasharray="4,4"/>
+
+  <text x="1100" y="120" class="header-text" text-anchor="middle">STAGE 5: SYNTHESIS</text>
+
+  <!-- ================= LANE 1: BIGQUERY NATIVE ================= -->
+  <rect x="20" y="140" width="1200" height="132" fill="#fafafa" rx="6" stroke="rgba(45,49,66,0.08)"/>
+  <rect x="32" y="148" width="180" height="20" rx="4" fill="#e3f2fd"/>
+  <text x="38" y="162" class="lane-tag" fill="#0d47a1">METHOD 1: BIGQUERY ZERO-COPY</text>
+  <text x="38" y="180" class="node-sub">Cloud-Managed SQL Pipeline</text>
+  <text x="38" y="196" class="metric-text">Stage 1: 2.87s (GCS Upload)</text>
+  <text x="38" y="210" class="metric-text">Stage 2: Cloud (DocAI)</text>
+  <text x="38" y="224" class="metric-text">Stage 3: 46.4s (SQL AI.EMBED)</text>
+  <text x="38" y="238" class="metric-text">Total Ingest: 49.3s ($1.503)</text>
+  <text x="38" y="252" class="metric-text">Query: $0.000060 (3.9s P50)</text>
+
+  <!-- Stage 1 Staging -->
+  <rect x="225" y="180" width="155" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="302" y="200" class="node-title" text-anchor="middle">GCS Object Table</text>
+  <text x="302" y="215" class="node-sub" text-anchor="middle">PDF Upload: 2.87s</text>
+
+  <!-- Stage 2 Extraction -->
+  <rect x="410" y="180" width="165" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="492" y="200" class="node-title" text-anchor="middle">DocAI Layout Parser</text>
+  <text x="492" y="215" class="node-sub" text-anchor="middle">Cloud Async Parsing</text>
+
+  <!-- Stage 3 Embedding -->
+  <rect x="605" y="180" width="165" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="687" y="200" class="node-title" text-anchor="middle">Autonomous AI.EMBED</text>
+  <text x="687" y="215" class="node-sub" text-anchor="middle">text-embedding-005 (46.4s)</text>
+
+  <!-- Stage 4 Retrieval -->
+  <rect x="800" y="180" width="160" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="880" y="200" class="node-title" text-anchor="middle">AI.SEARCH()</text>
+  <text x="880" y="215" class="node-sub" text-anchor="middle">SQL Vector Scan</text>
+
+  <!-- Stage 5 Synthesis -->
+  <rect x="990" y="180" width="215" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="1097" y="200" class="node-title" text-anchor="middle">Gemini 3.8 Flash</text>
+  <text x="1097" y="215" class="node-sub" text-anchor="middle">Top 5 Layout Blocks (3.9s)</text>
+
+  <!-- Connectors Lane 1 -->
+  <line x1="380" y1="205" x2="404" y2="205" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="575" y1="205" x2="599" y2="205" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="770" y1="205" x2="794" y2="205" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="960" y1="205" x2="984" y2="205" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+
+  <!-- ================= LANE 2: FLASH MARKDOWN ================= -->
+  <rect x="20" y="282" width="1200" height="132" fill="#fafafa" rx="6" stroke="rgba(45,49,66,0.08)"/>
+  <rect x="32" y="290" width="180" height="20" rx="4" fill="#ede7f6"/>
+  <text x="38" y="304" class="lane-tag" fill="#4527a0">METHOD 2: FLASH VISION MD</text>
+  <text x="38" y="322" class="node-sub">Client Split + Vision OCR</text>
+  <rect x="32" y="290" width="225" height="20" rx="4" fill="#ede7f6"/>
+  <text x="38" y="304" class="lane-tag" fill="#4527a0">METHOD 2: GEMINI FLASH 3.5 LITE MD</text>
+  <text x="38" y="322" class="node-sub">Client Split + Multimodal OCR</text>
+  <text x="38" y="338" class="metric-text">Stage 1: N/A (Local Slicing)</text>
+  <text x="38" y="352" class="metric-text" fill="#4527a0">Stage 2: 90.97s (Vision OCR)</text>
+  <text x="38" y="352" class="metric-text" fill="#4527a0">Stage 2: 90.97s (Flash Lite)</text>
+  <text x="38" y="366" class="metric-text">Stage 3: 31.4s (Vector DB)</text>
+  <text x="38" y="380" class="metric-text">Total Ingest: 122.3s ($0.0081)</text>
+  <text x="38" y="394" class="metric-text">Recall: 0.94 | Relevancy: 0.95</text>
+
+  <!-- Stage 1 Staging -->
+  <rect x="225" y="322" width="155" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="302" y="342" class="node-title" text-anchor="middle">Local PDF Slicing</text>
+  <text x="302" y="357" class="node-sub" text-anchor="middle">150 DPI PNG (69 KB/p)</text>
+
+  <!-- Stage 2 Extraction -->
+  <rect x="410" y="322" width="165" height="50" rx="6" fill="#ffffff" stroke="#4527a0" stroke-width="1.2"/>
+  <text x="492" y="342" class="node-title" fill="#4527a0" text-anchor="middle">Flash 3.5 Lite Vision</text>
+  <text x="492" y="342" class="node-title" fill="#4527a0" text-anchor="middle">Gemini Flash 3.5 Lite</text>
+  <text x="492" y="357" class="node-sub" text-anchor="middle">25 Workers &bull; 90.97s OCR</text>
+
+  <!-- Stage 3 Embedding -->
+  <rect x="605" y="322" width="165" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="687" y="342" class="node-title" text-anchor="middle">Dense Vector Index</text>
+  <text x="687" y="357" class="node-sub" text-anchor="middle">text-embedding-004 (31.4s)</text>
+
+  <!-- Stage 4 Retrieval -->
+  <rect x="800" y="322" width="160" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="880" y="342" class="node-title" text-anchor="middle">Cosine Similarity</text>
+  <text x="880" y="357" class="node-sub" text-anchor="middle">Top-K Markdown Chunks</text>
+
+  <!-- Stage 5 Synthesis -->
+  <rect x="990" y="322" width="215" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="1097" y="342" class="node-title" text-anchor="middle">Gemini 3.8 Flash</text>
+  <text x="1097" y="357" class="node-sub" text-anchor="middle">Synthesize 5 Chunks (2.8s)</text>
+
+  <!-- Connectors Lane 2 -->
+  <line x1="380" y1="347" x2="404" y2="347" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="575" y1="347" x2="599" y2="347" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="770" y1="347" x2="794" y2="347" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="960" y1="347" x2="984" y2="347" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+
+  <!-- ================= LANE 3: PYMUPDF4LLM ================= -->
+  <rect x="20" y="424" width="1200" height="132" fill="#fafafa" rx="6" stroke="rgba(45,49,66,0.08)"/>
+  <rect x="32" y="432" width="200" height="20" rx="4" fill="#e8f5e9"/>
+  <text x="38" y="446" class="lane-tag" fill="#1b5e20">METHOD 3: PYMUPDF4LLM (LOCAL CPU)</text>
+  <text x="38" y="464" class="node-sub">Local CPU Text &amp; Layout Parser</text>
+  <text x="38" y="480" class="metric-text">Stage 1: N/A (Direct Local)</text>
+  <text x="38" y="494" class="metric-text" fill="#1b5e20">Stage 2: 1.41s (Local CPU)</text>
+  <text x="38" y="508" class="metric-text">Stage 3: 33.0s (Vector DB)</text>
+  <text x="38" y="522" class="metric-text">Total Ingest: 34.4s ($0.0006)</text>
+  <text x="38" y="536" class="metric-text" fill="#e65100">Recall: 0.62 (Drops Tables)</text>
+
+  <!-- Stage 1 Staging -->
+  <rect x="225" y="464" width="155" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="302" y="484" class="node-title" text-anchor="middle">Local File Stream</text>
+  <text x="302" y="499" class="node-sub" text-anchor="middle">Zero Cloud Upload (N/A)</text>
+
+  <!-- Stage 2 Extraction -->
+  <rect x="410" y="464" width="165" height="50" rx="6" fill="#ffffff" stroke="#1b5e20" stroke-width="1.2"/>
+  <text x="492" y="484" class="node-title" fill="#1b5e20" text-anchor="middle">PyMuPDF C++ Parser</text>
+  <text x="492" y="499" class="node-sub" text-anchor="middle">1.41s / $0.00 Cloud Cost</text>
+
+  <!-- Stage 3 Embedding -->
+  <rect x="605" y="464" width="165" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="687" y="484" class="node-title" text-anchor="middle">Dense Vector Index</text>
+  <text x="687" y="499" class="node-sub" text-anchor="middle">text-embedding-004 (33.0s)</text>
+
+  <!-- Stage 4 Retrieval -->
+  <rect x="800" y="464" width="160" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="880" y="484" class="node-title" text-anchor="middle">Cosine Similarity</text>
+  <text x="880" y="499" class="node-sub" text-anchor="middle">Top 5 Chunks (No tables)</text>
+
+  <!-- Stage 5 Synthesis -->
+  <rect x="990" y="464" width="215" height="50" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.2)"/>
+  <text x="1097" y="484" class="node-title" text-anchor="middle">Gemini 3.8 Flash</text>
+  <text x="1097" y="499" class="node-sub" text-anchor="middle">Synthesize 5 Chunks (3.5s)</text>
+
+  <!-- Connectors Lane 3 -->
+  <line x1="380" y1="489" x2="404" y2="489" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="575" y1="489" x2="599" y2="489" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="770" y1="489" x2="794" y2="489" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="960" y1="489" x2="984" y2="489" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+
+  <!-- ================= LANE 4: DIRECT FLASH ================= -->
+  <rect x="20" y="566" width="1200" height="138" fill="#fffaf5" rx="6" stroke="rgba(235,108,54,0.3)"/>
+  <rect x="32" y="574" width="240" height="20" rx="4" fill="#fff3e0"/>
+  <text x="38" y="588" class="lane-tag" fill="#e65100">METHOD 4: DIRECT GCS LONG-CONTEXT</text>
+  <text x="38" y="606" class="node-sub">Zero-ETL Native Multimodal Stream</text>
+  <text x="38" y="622" class="metric-text">Stage 1: N/A (Direct URI)</text>
+  <text x="38" y="636" class="metric-text">Stage 2: N/A (Zero ETL)</text>
+  <text x="38" y="650" class="metric-text">Stage 3: N/A (Zero Vectors)</text>
+  <text x="38" y="664" class="metric-text">Total Ingest: 0.00s (Instant)</text>
+  <text x="38" y="678" class="metric-text" fill="#2e7d32">Faithfulness: 1.00 (Zero Hallucination)</text>
+
+  <!-- Stage 1 Staging -->
+  <rect x="225" y="606" width="155" height="50" rx="6" fill="#ffffff" stroke="#eb6c36" stroke-width="1.2"/>
+  <text x="302" y="626" class="node-title" fill="#eb6c36" text-anchor="middle">GCS URI Pointer</text>
+  <text x="302" y="641" class="node-sub" text-anchor="middle">gs://... (0 KB Upload)</text>
+
+  <!-- Stage 2 Bypassed Extraction -->
+  <rect x="410" y="606" width="165" height="50" rx="6" fill="rgba(235,108,54,0.04)" stroke="rgba(235,108,54,0.3)" stroke-dasharray="4,3"/>
+  <text x="492" y="626" class="node-sub" text-anchor="middle">No Text Extraction</text>
+  <text x="492" y="641" class="node-sub" fill="#eb6c36" text-anchor="middle">[BYPASSED &bull; N/A]</text>
+
+  <!-- Stage 3 Bypassed Embedding -->
+  <rect x="605" y="606" width="165" height="50" rx="6" fill="rgba(235,108,54,0.04)" stroke="rgba(235,108,54,0.3)" stroke-dasharray="4,3"/>
+  <text x="687" y="626" class="node-sub" text-anchor="middle">No Vector Index</text>
+  <text x="687" y="641" class="node-sub" fill="#eb6c36" text-anchor="middle">[BYPASSED &bull; N/A]</text>
+
+  <!-- Stage 4 & 5 Full Context Fusion -->
+  <rect x="800" y="606" width="405" height="50" rx="6" fill="#ffffff" stroke="#eb6c36" stroke-width="1.4"/>
+  <text x="1002" y="626" class="node-title" fill="#eb6c36" text-anchor="middle">Gemini 3.8 Flash 1M+ Context Window (Full PDF Injection)</text>
+  <text x="1002" y="641" class="node-sub" text-anchor="middle">Streams ~26k Tokens natively from GCS &bull; Attention Scan &bull; 100% Faithfulness</text>
+
+  <!-- Connectors Lane 4 -->
+  <path d="M 380 631 H 404" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+  <path d="M 575 631 H 599" stroke="#eb6c36" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrow-accent)"/>
+  <path d="M 770 631 H 794" stroke="#eb6c36" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrow-accent)"/>
+
+</svg>

@@ -1,0 +1,163 @@
+[
+  {
+    "id": "BP-TC-01",
+    "page": 3,
+    "section": "Early",
+    "input": "What was the total number of employees at bp as of 31 December 2023, and how did it compare to 2022?",
+    "expected_output": "As of 31 December 2023, bp had 87,800 employees, compared to 67,600 employees in 2022.",
+    "context_ground_truth": [
+      "87,800 employees as at 31 December 2023 (2022 67,600)"
+    ]
+  },
+  {
+    "id": "BP-TC-02",
+    "page": 3,
+    "section": "Early",
+    "input": "What was the profit attributable to bp shareholders and the underlying replacement cost profit reported for 2023?",
+    "expected_output": "Profit for the year attributable to bp shareholders was $15.2 billion (compared to a loss of $2.5 billion in 2022), and underlying replacement cost (RC) profit was $13.8 billion (compared to $27.7 billion in 2022).",
+    "context_ground_truth": [
+      "$15.2bn profit for the year attributable to bp shareholders (2022 loss $(2.5)bn)",
+      "$13.8bn underlying replacement cost (RC) profit (2022 $27.7bn)"
+    ]
+  },
+  {
+    "id": "BP-TC-03",
+    "page": 3,
+    "section": "Early",
+    "input": "What were bp's upstream unit production costs and electric vehicle charge points in 2023?",
+    "expected_output": "Upstream unit production costs were $5.78/boe (down from $6.07/boe in 2022), and bp had over 29,000 electric vehicle charge points (up from ~22,000 in 2022).",
+    "context_ground_truth": [
+      "$5.78/boe upstream unit production costs (2022 $6.07/boe)",
+      ">29,000 electric vehicle charge points (2022 ~22,000)"
+    ]
+  },
+  {
+    "id": "BP-TC-04",
+    "page": 26,
+    "section": "Early",
+    "input": "How many Tier 1 and Tier 2 process safety events occurred at bp in 2023?",
+    "expected_output": "In 2023, there were 39 total Tier 1 and Tier 2 process safety events, comprising 9 Tier 1 events and 30 Tier 2 events (down from 50 total in 2022, which had 17 Tier 1 and 33 Tier 2 events).",
+    "context_ground_truth": [
+      "39 tier 1 and 2 process safety events in 2023 (2022 50)",
+      "2023: 39 total, 9 Tier 1 process safety events, 30 Tier 2 process safety events"
+    ]
+  },
+  {
+    "id": "BP-TC-05",
+    "page": 38,
+    "section": "Early",
+    "input": "What are the group's three reportable business segments as of 31 December 2023?",
+    "expected_output": "At 31 December 2023, the group's reportable segments are gas & low carbon energy, oil production & operations, and customers & products.",
+    "context_ground_truth": [
+      "At 31 December 2023 the group's reportable segments are gas & low carbon energy, oil production & operations and customers & products."
+    ]
+  },
+  {
+    "id": "BP-TC-06",
+    "page": 115,
+    "section": "Middle",
+    "input": "What leadership changes occurred on 12 September 2023 regarding bp's CEO?",
+    "expected_output": "On 12 September 2023, Bernard Looney resigned as CEO and stepped down from the board with immediate effect, and Murray Auchincloss was appointed as interim CEO, having previously served as CFO.",
+    "context_ground_truth": [
+      "As announced on 12 September 2023, Bernard Looney resigned as CEO and stepped down from the board with immediate effect.",
+      "Murray Auchincloss was appointed as interim CEO on 12 September 2023, having previously been in position as CFO."
+    ]
+  },
+  {
+    "id": "BP-TC-07",
+    "page": 123,
+    "section": "Middle",
+    "input": "When was Murray Auchincloss appointed as permanent CEO and what was his base pay set at?",
+    "expected_output": "Murray Auchincloss was appointed as CEO with immediate effect on 17 January 2024, with his base salary set at £1.45 million.",
+    "context_ground_truth": [
+      "As announced on 17 January 2024, Murray Auchincloss was appointed as CEO with immediate effect and his base pay was set at £1.45m"
+    ]
+  },
+  {
+    "id": "BP-TC-08",
+    "page": 166,
+    "section": "Middle",
+    "input": "What were bp's sales and other operating revenues and total revenues and other income in the 2023 Group income statement?",
+    "expected_output": "Sales and other operating revenues were $210,130 million (down from $241,392 million in 2022), and total revenues and other income were $213,032 million (down from $248,891 million in 2022).",
+    "context_ground_truth": [
+      "Sales and other operating revenues 2023: $210,130 million (2022: $241,392 million)",
+      "Total revenues and other income 2023: $213,032 million (2022: $248,891 million)"
+    ]
+  },
+  {
+    "id": "BP-TC-09",
+    "page": 169,
+    "section": "Middle",
+    "input": "What were bp's total assets and cash and cash equivalents at 31 December 2023 according to the Group balance sheet?",
+    "expected_output": "As of 31 December 2023, total assets were $280,294 million (compared to $288,120 million in 2022) and cash and cash equivalents were $33,030 million (compared to $29,195 million in 2022).",
+    "context_ground_truth": [
+      "Total assets at 31 December 2023: $280,294 million (2022: $288,120 million)",
+      "Cash and cash equivalents at 31 December 2023: $33,030 million (2022: $29,195 million)"
+    ]
+  },
+  {
+    "id": "BP-TC-10",
+    "page": 170,
+    "section": "Middle",
+    "input": "What was the net cash provided by operating activities reported in bp's Group cash flow statement for 2023?",
+    "expected_output": "Net cash provided by operating activities was $32,039 million in 2023, compared to $40,932 million in 2022 and $23,612 million in 2021.",
+    "context_ground_truth": [
+      "Net cash provided by operating activities: 2023: $32,039 million, 2022: $40,932 million, 2021: $23,612 million"
+    ]
+  },
+  {
+    "id": "BP-TC-11",
+    "page": 196,
+    "section": "Middle",
+    "input": "What was the replacement cost profit before interest and taxation for the Gas & low carbon energy and Oil production & operations segments in 2023?",
+    "expected_output": "Replacement cost profit before interest and taxation was $14,080 million for Gas & low carbon energy and $11,191 million for Oil production & operations in 2023.",
+    "context_ground_truth": [
+      "Gas & low carbon energy Replacement cost profit before interest and taxation: $14,080 million",
+      "Oil production & operations Replacement cost profit before interest and taxation: $11,191 million"
+    ]
+  },
+  {
+    "id": "BP-TC-12",
+    "page": 257,
+    "section": "Late",
+    "input": "What were the total estimated net proved reserves of natural gas liquids for bp subsidiaries at 31 December 2023, and how were they split between developed and undeveloped?",
+    "expected_output": "At 31 December 2023, total natural gas liquids proved reserves for subsidiaries were 401 million barrels, comprising 184 million barrels developed and 217 million barrels undeveloped.",
+    "context_ground_truth": [
+      "Natural gas liquids subsidiaries at 31 December: Developed 184 million barrels, Undeveloped 217 million barrels, Total 401 million barrels"
+    ]
+  },
+  {
+    "id": "BP-TC-13",
+    "page": 360,
+    "section": "Late",
+    "input": "What restrictions were placed on bp's operations and dealings regarding Russia under international sanctions?",
+    "expected_output": "The sanctions include restrictions on dealing with designated individuals and entities, restrictions on the Russian financial sector, blocking economic activity in certain areas of Ukraine not controlled by the Ukrainian government, and prohibitions in relation to investment in Russia.",
+    "context_ground_truth": [
+      "The scope of these sanctions includes restrictions on dealing with designated individuals and entities; restrictions on the Russian financial sector; blocking economic activity in certain areas of Ukraine not controlled by the Ukrainian government; prohibitions in relation to investment in Russia"
+    ]
+  },
+  {
+    "id": "BP-TC-14",
+    "page": 366,
+    "section": "Late",
+    "input": "Where are bp's ordinary shares and ADSs primarily listed, who is the US depositary, and how many ordinary shares does each ADS represent?",
+    "expected_output": "The primary market for ordinary shares is the London Stock Exchange (trading symbol 'BP'). In the US, securities trade on the New York Stock Exchange as ADSs ('BP'), for which JPMorgan Chase Bank, N.A. is the depositary and transfer agent. Each ADS represents six ordinary shares.",
+    "context_ground_truth": [
+      "The primary market for the company's ordinary shares (trading symbol 'BP') is the London Stock Exchange (LSE).",
+      "In the US, the company's securities are listed and traded on the New York Stock Exchange (NYSE) in the form of ADSs (trading symbol 'BP'), for which JPMorgan Chase Bank, N.A. is the depositary",
+      "Each ADS represents six ordinary shares."
+    ]
+  },
+  {
+    "id": "BP-TC-15",
+    "page": 389,
+    "section": "Late",
+    "input": "According to the 'Information about this report' section, what page ranges contain the Strategic report, the Directors' remuneration report, and the consolidated financial statements?",
+    "expected_output": "The Strategic report is on pages 1-80, the Directors' remuneration report is on pages 105-132, and the consolidated financial statements of the group are on pages 137-246.",
+    "context_ground_truth": [
+      "This document contains the Strategic report on the inside front cover and pages 1-80",
+      "The Directors' remuneration report is on pages 105-132.",
+      "The consolidated financial statements of the group are on pages 137-246"
+    ]
+  }
+]

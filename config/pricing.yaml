@@ -1,0 +1,29 @@
+project_id: "your-gcp-project-id"
+location: "us-central1"
+
+models:
+  gemini_flash:
+    model_name: "gemini-3.8-flash"
+    input_price_per_1m_tokens: 0.075
+    output_price_per_1m_tokens: 0.30
+    image_tokens_per_page: 258
+  embedding:
+    model_name: "text-embedding-004"
+    price_per_1m_characters: 0.025
+
+bigquery:
+  query_price_per_tb: 6.25
+  active_storage_per_gb_month: 0.02
+  long_term_storage_per_gb_month: 0.01
+
+document_ai:
+  layout_parser_price_per_1k_pages: 30.00
+  ocr_processor_price_per_1k_pages: 1.50
+  processor_id: "your-docai-processor-id"
+
+direct_gemini:
+  model_name: "gemini-3.8-flash"
+  input_price_per_1m_tokens: 0.075
+  output_price_per_1m_tokens: 0.30
+
+

@@ -1,0 +1,5 @@
+Method,Ingestion Cost (USD),Document Parsing Time (s),Client Upload Staging Time (s),Embedding Ready Time (s),Total Ingest Time (s),Cost Per Query (USD),Query Latency P50 (ms),Query Latency P90 (ms),Query Latency P99 (ms),Faithfulness,Answer Relevancy,Contextual Precision,Contextual Recall,Contextual Relevancy,Document Completeness,Early Recall,Middle Recall,Late Recall,Lost in Middle Degradation (%)
+Method 1: BigQuery Native,11.806808103125,Managed in Cloud (DocAI),7.12,41.12,48.29,6e-05,4126.27,14551.92,47141.38,0.86,0.95,0.90,0.96,0.88,0.77,0.99,0.91,1.00,8.6%
+Method 2: Gemini Flash MD,0.0635726,432.44,N/A,707.67,1140.11,7.9e-05,5844.41,10585.34,11130.74,0.81,0.96,0.90,0.80,0.88,0.59,0.80,0.83,0.76,0.0%
+Method 3: PyMuPDF4LLM,0.04298032500000001,263.83,N/A,325.5,589.33,7.9e-05,4269.58,9710.8,42697.55,0.88,0.95,0.89,0.91,0.88,0.64,0.93,0.89,0.90,3.2%
+Method 4: Direct GCS Flash,0.0,N/A,N/A,N/A,0.015,0.001995,40480.63,48227.75,76368.69,1.00,0.97,0.90,0.86,0.88,0.81,0.88,0.80,0.93,11.2%

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jit-rag-poc"
+version = "0.1.0"
+description = "Comparative Just-In-Time RAG (JIT-RAG) benchmark: BigQuery Native vs Gemini Flash Vision vs PyMuPDF4LLM"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+

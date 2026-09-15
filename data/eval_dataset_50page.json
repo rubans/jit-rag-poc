@@ -1,0 +1,228 @@
+[
+  {
+    "id": "TC-01",
+    "page": 3,
+    "input": "What was the consolidated revenue of Vertex Global Enterprise in FY 2024 and what was the year-over-year growth rate?",
+    "expected_output": "The consolidated revenue in FY 2024 was $84.20 billion, representing an 18.5% year-over-year increase from $71.05 billion in FY 2023.",
+    "context_ground_truth": [
+      "Consolidated Revenue FY 2023: $71.05 B, FY 2024: $84.20 B, YoY Change: +18.5%"
+    ]
+  },
+  {
+    "id": "TC-02",
+    "page": 3,
+    "input": "What was the operating margin expansion and operating income for FY 2024?",
+    "expected_output": "The operating margin expanded by 240 basis points to 28.2%, and operating income reached $23.74 billion, up 29.5% from $18.33 billion in FY 2023.",
+    "context_ground_truth": [
+      "Operating margin expanded by 240 basis points to 28.2%",
+      "Operating Income: $18.33 B in FY23 to $23.74 B in FY24 (+29.5%)"
+    ]
+  },
+  {
+    "id": "TC-03",
+    "page": 4,
+    "input": "What percentage of core analytical workloads were migrated to BigQuery in 2024, and what was the idle cost reduction achieved?",
+    "expected_output": "92% of core analytical workloads were migrated to serverless BigQuery architectures, achieving a 42% reduction in query idle cost.",
+    "context_ground_truth": [
+      "migration of 92% of core analytical workloads to serverless BigQuery architectures, achieving a 42% reduction in query idle cost."
+    ]
+  },
+  {
+    "id": "TC-04",
+    "page": 4,
+    "input": "What was the achieved Global Data Center Power Usage Effectiveness (PUE) in 2024?",
+    "expected_output": "The achieved Global Data Center PUE in 2024 was 1.14, beating the target of PUE < 1.18.",
+    "context_ground_truth": [
+      "Global Data Center PUE Target Metric PUE < 1.18, Actual 2024 Result PUE 1.14 achieved."
+    ]
+  },
+  {
+    "id": "TC-05",
+    "page": 5,
+    "input": "How much total capital was returned to shareholders in 2024 across share repurchases and dividends?",
+    "expected_output": "Vertex returned a total of $12.4 billion to shareholders, comprising $9.2 billion in share repurchases and $3.2 billion in cash dividends.",
+    "context_ground_truth": [
+      "returned $12.4 billion to shareholders via $9.2 billion in common share repurchases and $3.2 billion in quarterly cash dividends"
+    ]
+  },
+  {
+    "id": "TC-06",
+    "page": 5,
+    "input": "What was the total dollar amount and percentage of cash flow spent on R&D investments in 2024?",
+    "expected_output": "R&D investments were $4,800 million ($4.8 billion), representing 25.1% of cash flow.",
+    "context_ground_truth": [
+      "R&D Investments: $4,800 M, 25.1% of Cash Flow"
+    ]
+  },
+  {
+    "id": "TC-07",
+    "page": 6,
+    "input": "What was the customer churn rate reported in Q4 2024 for Regional Division 1?",
+    "expected_output": "The customer churn rate in Q4 2024 for Regional Division 1 was 0.9%.",
+    "context_ground_truth": [
+      "Customer Churn Rate Q1: 1.4%, Q2: 1.2%, Q3: 1.1%, Q4 2024: 0.9%"
+    ]
+  },
+  {
+    "id": "TC-08",
+    "page": 8,
+    "input": "What was the infrastructure availability SLA maintained across availability zones in Division 3?",
+    "expected_output": "The infrastructure availability SLA was maintained at 99.995% across all availability zones.",
+    "context_ground_truth": [
+      "Infrastructure availability SLA was maintained at 99.995% across all availability zones."
+    ]
+  },
+  {
+    "id": "TC-09",
+    "page": 10,
+    "input": "What was the average contract value in Q4 2024 for Business Segment Operations Unit 5?",
+    "expected_output": "The average contract value in Q4 2024 was $145,000.",
+    "context_ground_truth": [
+      "Average Contract Value: $124,000 in Q1, $131,000 in Q2, $138,000 in Q3, $145,000 in Q4 2024"
+    ]
+  },
+  {
+    "id": "TC-10",
+    "page": 16,
+    "input": "What was the total corporate liquidity and weighted average maturity of US Treasury bills as of December 31, 2024?",
+    "expected_output": "Total corporate liquidity stood at $29.30 billion, consisting of cash, equivalents, and US Treasuries with a weighted average maturity of 4.2 months.",
+    "context_ground_truth": [
+      "liquidity reserves stood at $29.30 billion, consisting of cash, cash equivalents, and short-term US Treasury bills with weighted average maturity of 4.2 months."
+    ]
+  },
+  {
+    "id": "TC-11",
+    "page": 18,
+    "input": "What was the effective yield reported for Short-Term US Treasuries under Note 3?",
+    "expected_output": "The effective yield for Short-Term US Treasuries was 5.28%.",
+    "context_ground_truth": [
+      "Short-Term US Treasuries effective yield: 5.28%"
+    ]
+  },
+  {
+    "id": "TC-12",
+    "page": 20,
+    "input": "What was the carrying value of Corporate Commercial Paper reported under Note 5?",
+    "expected_output": "The carrying value of Corporate Commercial Paper under Note 5 was $4,000 million ($4.0 billion).",
+    "context_ground_truth": [
+      "Corporate Commercial Paper: Carrying Value $4000 M"
+    ]
+  },
+  {
+    "id": "TC-13",
+    "page": 26,
+    "input": "How many daily analytical events does the enterprise data fabric process?",
+    "expected_output": "The platform processes 97 billion daily analytical events using BigQuery storage and GCS object tables.",
+    "context_ground_truth": [
+      "The platform processes 97 billion daily analytical events using BigQuery storage and Google Cloud Storage object tables."
+    ]
+  },
+  {
+    "id": "TC-14",
+    "page": 26,
+    "input": "What embedding model and vector dimension are used for vector search indices in Module 1?",
+    "expected_output": "Vector search indices utilize 768-dimensional embeddings generated via text-embedding-004.",
+    "context_ground_truth": [
+      "Vector search indices utilize 768-dimensional embeddings generated via text-embedding-004"
+    ]
+  },
+  {
+    "id": "TC-15",
+    "page": 28,
+    "input": "What is the target latency and throughput limit for the BigQuery External Object Table engine in Module 3?",
+    "expected_output": "The table engine throughput limit is 1M reads / sec with a target latency of < 25 ms.",
+    "context_ground_truth": [
+      "Table Engine: BigQuery External Object Table, Throughput: 1M reads / sec, Target Latency: < 25 ms"
+    ]
+  },
+  {
+    "id": "TC-16",
+    "page": 30,
+    "input": "What vector index type is specified in the technical infrastructure and what is its vector capacity limit?",
+    "expected_output": "BigQuery IVF (Inverted File) vector index with a capacity of 10M vectors and target latency < 150 ms.",
+    "context_ground_truth": [
+      "Vector Indexing: BigQuery IVF (Inverted File), Throughput Limit: 10M vectors, Target Latency: < 150 ms"
+    ]
+  },
+  {
+    "id": "TC-17",
+    "page": 32,
+    "input": "What is the request rate limit for the Vertex AI text-embedding-004 embedding engine?",
+    "expected_output": "The throughput limit for the embedding engine is 50,000 requests per minute with target latency < 80 ms.",
+    "context_ground_truth": [
+      "Embedding Engine: Vertex AI text-embedding-004, Throughput Limit: 50,000 req / min, Target Latency: < 80 ms"
+    ]
+  },
+  {
+    "id": "TC-18",
+    "page": 36,
+    "input": "What is the mitigation strategy and Recovery Point Objective (RPO) for cross-region outages?",
+    "expected_output": "Multi-region automatic failover with an RPO of less than 1 minute.",
+    "context_ground_truth": [
+      "Cross-Region Outage: Multi-region automatic failover with RPO < 1 min"
+    ]
+  },
+  {
+    "id": "TC-19",
+    "page": 38,
+    "input": "What framework and threshold score are specified to mitigate model hallucinations in the risk matrix?",
+    "expected_output": "A RAG Groundedness filter using DeepEval with a threshold score > 0.70.",
+    "context_ground_truth": [
+      "Model Hallucination: RAG Groundedness filter with DeepEval threshold > 0.70"
+    ]
+  },
+  {
+    "id": "TC-20",
+    "page": 40,
+    "input": "What is the frequency of vector index re-clustering audits to mitigate vector data drift?",
+    "expected_output": "Bi-weekly vector index re-clustering and audit.",
+    "context_ground_truth": [
+      "Data Drift in Vectors: Bi-weekly vector index re-clustering & audit"
+    ]
+  },
+  {
+    "id": "TC-21",
+    "page": 42,
+    "input": "Across how many geographic jurisdictions do data sovereignty mechanisms guarantee data isolation?",
+    "expected_output": "Data sovereignty mechanisms guarantee data isolation across 18 geographic jurisdictions.",
+    "context_ground_truth": [
+      "Data sovereignty mechanisms guarantee data isolation across 18 geographic jurisdictions."
+    ]
+  },
+  {
+    "id": "TC-22",
+    "page": 46,
+    "input": "What was the percentage reduction in data center carbon footprint in 2024 relative to the 2020 baseline?",
+    "expected_output": "Data center carbon footprint decreased by 15% relative to the 2020 baseline.",
+    "context_ground_truth": [
+      "data center carbon footprint decreased by 15% relative to baseline 2020 metrics."
+    ]
+  },
+  {
+    "id": "TC-23",
+    "page": 48,
+    "input": "What was the Water Usage Effectiveness (WUE) achieved in 2024 and what is the 2025 target?",
+    "expected_output": "Water Usage Effectiveness (WUE) was 1.15 in 2024, with a 2025 target of < 1.10.",
+    "context_ground_truth": [
+      "Water Usage Effectiveness (WUE) 2022: 1.42, 2023: 1.28, 2024: 1.15, 2025 Target: < 1.10"
+    ]
+  },
+  {
+    "id": "TC-24",
+    "page": 49,
+    "input": "What was the Board Independence percentage reported for 2024?",
+    "expected_output": "The Board Independence percentage was 85% in 2024.",
+    "context_ground_truth": [
+      "Board Independence: 80% in 2022, 80% in 2023, 85% in 2024, 85% in 2025 Target"
+    ]
+  },
+  {
+    "id": "TC-25",
+    "page": 50,
+    "input": "What was the Supplier Code Compliance rate reported for 2024?",
+    "expected_output": "The Supplier Code Compliance rate was 99.2% in 2024.",
+    "context_ground_truth": [
+      "Supplier Code Compliance: 94% in 2022, 97% in 2023, 99.2% in 2024, 100% in 2025 Target"
+    ]
+  }
+]
