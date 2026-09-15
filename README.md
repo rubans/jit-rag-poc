@@ -96,13 +96,19 @@ Method 4 requires **$0.00 upfront ingestion cost**, but incurs **~$0.001995 per 
 | **50 queries** | $1.5064 | $0.0121 | **$0.0046** | $0.0997 | Method 3 & 2 dominate |
 | **1,000 queries** | $1.5634 | $0.0871 | **$0.0796** | $1.9950 | Method 4 is 25x more expensive |
 
-- **Method 4 vs Method 3 Crossover**: **~2 queries**. For >2 queries, building a PyMuPDF4LLM index is cheaper.
+- **Method 4 vs Method 3 Crossover**: **~1–2 queries**. For >2 queries, building a PyMuPDF4LLM index is cheaper.
 - **Method 4 vs Method 2 Crossover**: **~4 queries**.
-- **Method 4 vs Method 1 Crossover**: **~780 queries**.
+- **Method 4 vs Method 1 Crossover**: **~714 queries**.
 
 ---
 
-## Architectural Decision Matrix
+## The Adaptive JIT-RAG Pattern
+
+In production enterprise deployments, no single RAG method is universally optimal across all document formats and interaction patterns. Instead of forcing all traffic into a single pipeline, the **Adaptive JIT-RAG Pattern** classifies inbound documents in **<50ms** based on text density, page count, and query intent to dynamically dispatch to the optimal architecture.
+
+For the full architectural specification, classification heuristics, and reference Python router, see **[Adaptive JIT-RAG Architecture Pattern](docs/architecture/adaptive_jit_rag_pattern.md)**.
+
+### Architectural Decision Tree
 
 ```
                         Is it a 1-off query on a cold document?
@@ -115,15 +121,15 @@ Method 4 requires **$0.00 upfront ingestion cost**, but incurs **~$0.001995 per 
                • 0s cold start latency                 YES              NO
                • Perfect Faithfulness (1.00)           /                  \
                                               Use METHOD 2           Does it require enterprise
-                                       (Gemini Flash 3.5 Lite MD)    SQL governance & lakehouse?
+                                       (Gemini Flash Vision MD)      SQL governance & lakehouse?
                                            • Best visual recall             /            \
-                                           • 0.94 Recall / 0.78 Faith    YES              NO
-                                                                         /                  \
-                                                                Use METHOD 1            Use METHOD 3
-                                                              (BigQuery Native)       (PyMuPDF4LLM CPU)
-                                                              • SQL & IAM governed    • $0.0006 ingest cost
-                                                              • P50 1.7s query        • 1.37s fast client parse
-                                                              • Zero client ETL       • Position-invariant recall
+                                           • 0.94 Recall / 0.95 Relevancy YES             NO
+                                                                          /                  \
+                                                                 Use METHOD 1            Use METHOD 3
+                                                               (BigQuery Native)       (PyMuPDF4LLM CPU)
+                                                               • Document AI Parser    • $0.0006 ingest cost
+                                                               • SQL & IAM governed    • 6.8s fast cold start
+                                                               • Zero client ETL       • Position-invariant recall
 ```
 
 ---
