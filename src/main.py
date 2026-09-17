@@ -24,6 +24,7 @@ from src.common.config import load_config
 from src.legacy_flash.pipeline import FlashMarkdownRAGPipeline
 from src.bigquery_native.pipeline import BigQueryNativeRAGPipeline
 from src.pymupdf4llm_pipeline.pipeline import PyMuPDF4LLMRAGPipeline
+from src.docling_pipeline.pipeline import DoclingRAGPipeline
 from src.direct_gemini.pipeline import DirectGeminiFlashRAGPipeline
 from src.eval.profiler import LatencyProfiler
 from src.eval.cost_calculator import CostCalculator
@@ -85,6 +86,15 @@ METHOD_ALIASES: Dict[str, str] = {
     "pymupdf_cpu": "method3",
     "local-cpu": "method3",
     "local_cpu": "method3",
+    # Method 3b: Docling Local CPU (TableFormer)
+    "3b": "method3b",
+    "method3b": "method3b",
+    "method3b_docling": "method3b",
+    "method3b-docling": "method3b",
+    "docling": "method3b",
+    "docling_cpu": "method3b",
+    "docling-cpu": "method3b",
+    "docling-local": "method3b",
     # Method 4: Direct Long-Context Flash (Zero-Embedding)
     "4": "method4",
     "method4": "method4",
@@ -110,17 +120,18 @@ METHOD_DESCRIPTIONS: Dict[str, str] = {
     "method1": "Method 1: BigQuery Native (Zero-Copy Architecture, Document AI Layout Chunker, AI.EMBED)",
     "method2": "Method 2: Gemini Flash Multimodal MD (Page Vision OCR, text-embedding-004)",
     "method3": "Method 3: PyMuPDF4LLM (Local CPU Layout Parser, $0 Cloud Parsing Cost)",
+    "method3b": "Method 3b: Docling Local CPU (TableFormer Layout Parser, IBM Research)",
     "method4": "Method 4: Direct Long-Context Gemini Flash (Zero-Embedding JIT-RAG)",
     "all": "All 4 Methods (Method 1, Method 2, Method 3, Method 4)"
 }
 
 
 def normalize_method_name(method: str) -> str:
-    """Normalizes any method alias or shortcode into canonical identifiers: method1, method2, method3, method4, or all."""
+    """Normalizes any method alias or shortcode into canonical identifiers: method1, method2, method3, method3b, method4, or all."""
     norm = str(method).strip().lower().replace(" ", "-")
     if norm in METHOD_ALIASES:
         return METHOD_ALIASES[norm]
-    supported = "method1 (bigquery), method2 (flash-vision-md), method3 (pymupdf-cpu), method4 (direct-flash), all"
+    supported = "method1 (bigquery), method2 (flash-vision-md), method3 (pymupdf-cpu), method3b (docling), method4 (direct-flash), all"
     raise ValueError(f"Unknown method '{method}'. Supported methods: {supported}")
 
 
@@ -248,6 +259,33 @@ def run_benchmark(
         print(f"  -> Total Chunks Indexed: {len(mupdf_pipeline.chunks)}")
         print(f"  -> Ingestion Cost: ${mupdf_ingest_metrics.total_cost_usd:.4f}")
 
+    # Method 3b: Docling Local CPU Ingestion (TableFormer Layout Parser)
+    docling_pipeline = None
+    docling_ingest_metrics = None
+    docling_parse_time_s = 0.0
+    docling_embed_time_s = 0.0
+    docling_ingest_time_s = 0.0
+
+    if norm_method in ("all", "method3b"):
+        print("\n[Method 3b] Ingesting PDF with Docling (TableFormer Layout Engine, Local CPU)...")
+        docling_pipeline = DoclingRAGPipeline(
+            project_id=project_id,
+            run_id=run_id,
+            auto_cleanup=auto_cleanup
+        )
+        print(f"  -> Run ID: {docling_pipeline.run_id}")
+        t_docling_start = time.perf_counter()
+        docling_ingest_metrics = docling_pipeline.ingest(pdf_path)
+        docling_ingest_time_s = time.perf_counter() - t_docling_start
+        docling_embed_time_s = docling_ingest_metrics.embedding_latency_ms / 1000.0
+        docling_parse_time_s = docling_ingest_metrics.ingestion_latency_ms / 1000.0
+
+        print(f"  -> Local CPU Parse Time (TableFormer): {docling_parse_time_s:.2f}s")
+        print(f"  -> Local Vector Embedding Time: {docling_embed_time_s:.2f}s")
+        print(f"  -> Total E2E Ingestion Time (100% Ready): {docling_ingest_time_s:.2f}s")
+        print(f"  -> Total Chunks Indexed: {len(docling_pipeline.chunks)}")
+        print(f"  -> Ingestion Cost: ${docling_ingest_metrics.total_cost_usd:.4f}")
+
     # Method 4: Direct Long-Context Gemini Flash (Zero-Embedding)
     direct_pipeline = None
     direct_ingest_metrics = None
@@ -276,11 +314,13 @@ def run_benchmark(
     profiler_flash = LatencyProfiler()
     profiler_bq = LatencyProfiler()
     profiler_mupdf = LatencyProfiler()
+    profiler_docling = LatencyProfiler()
     profiler_direct = LatencyProfiler()
 
     flash_scores_list: List[Dict[str, Any]] = []
     bq_scores_list: List[Dict[str, Any]] = []
     mupdf_scores_list: List[Dict[str, Any]] = []
+    docling_scores_list: List[Dict[str, Any]] = []
     direct_scores_list: List[Dict[str, Any]] = []
 
     for idx, item in enumerate(eval_items, 1):
@@ -323,6 +363,17 @@ def run_benchmark(
             mu_eval = eval_runner.evaluate_test_case(q, mu_ans, expected, mu_contexts)
             mupdf_scores_list.append({"page": page_num, "scores": mu_eval})
 
+        # Run Method 3b (Docling Local CPU)
+        if norm_method in ("all", "method3b") and docling_pipeline:
+            t3b = time.perf_counter()
+            d_ans, d_ret, d_m = docling_pipeline.query(q, top_k=top_k)
+            d_lat_ms = (time.perf_counter() - t3b) * 1000
+            profiler_docling.record("end_to_end", d_lat_ms)
+            d_contexts = [r.chunk.content for r in d_ret]
+
+            d_eval = eval_runner.evaluate_test_case(q, d_ans, expected, d_contexts)
+            docling_scores_list.append({"page": page_num, "scores": d_eval})
+
         # Run Method 4 (Direct Long-Context Gemini Flash)
         if norm_method in ("all", "method4") and direct_pipeline:
             t3 = time.perf_counter()
@@ -338,6 +389,7 @@ def run_benchmark(
     flash_lat_summary = profiler_flash.get_summary()
     bq_lat_summary = profiler_bq.get_summary()
     mupdf_lat_summary = profiler_mupdf.get_summary()
+    docling_lat_summary = profiler_docling.get_summary()
     direct_lat_summary = profiler_direct.get_summary()
 
     def avg_score(scores: List[Dict[str, Any]], key: str) -> float:
@@ -352,6 +404,7 @@ def run_benchmark(
     flash_pos = eval_runner.compute_position_stratified_metrics(flash_scores_list) if flash_scores_list else {}
     bq_pos = eval_runner.compute_position_stratified_metrics(bq_scores_list) if bq_scores_list else {}
     mupdf_pos = eval_runner.compute_position_stratified_metrics(mupdf_scores_list) if mupdf_scores_list else {}
+    docling_pos = eval_runner.compute_position_stratified_metrics(docling_scores_list) if docling_scores_list else {}
     direct_pos = eval_runner.compute_position_stratified_metrics(direct_scores_list) if direct_scores_list else {}
 
     bq_payload = existing_report.get("method1_bigquery") or existing_report.get("bigquery_native", {})
@@ -437,6 +490,33 @@ def run_benchmark(
             }
         }
 
+    docling_payload = existing_report.get("method3b_docling", {})
+    if norm_method in ("all", "method3b") and docling_ingest_metrics:
+        docling_payload = {
+            "ingestion_cost_usd": docling_ingest_metrics.total_cost_usd,
+            "client_ingest_time_s": round(docling_parse_time_s, 2),
+            "embedding_ready_time_s": round(docling_embed_time_s, 2),
+            "ingestion_time_s": round(docling_parse_time_s + docling_embed_time_s, 2),
+            "cost_per_query_usd": cost_calc.calculate_query_cost("legacy"),
+            "query_p50_ms": docling_lat_summary["end_to_end"]["p50"],
+            "query_p90_ms": docling_lat_summary["end_to_end"]["p90"],
+            "query_p99_ms": docling_lat_summary["end_to_end"]["p99"],
+            "faithfulness": avg_score(docling_scores_list, "faithfulness"),
+            "answer_relevancy": avg_score(docling_scores_list, "answer_relevancy"),
+            "contextual_precision": avg_score(docling_scores_list, "contextual_precision"),
+            "contextual_recall": avg_score(docling_scores_list, "contextual_recall"),
+            "contextual_relevancy": avg_score(docling_scores_list, "contextual_relevancy"),
+            "document_completeness": docling_pos.get("document_completeness", avg_score(docling_scores_list, "completeness")),
+            "early_recall": docling_pos.get("early_recall", 0.0),
+            "middle_recall": docling_pos.get("middle_recall", 0.0),
+            "late_recall": docling_pos.get("late_recall", 0.0),
+            "lost_in_middle_degradation_pct": docling_pos.get("lost_in_middle_degradation_pct", 0.0),
+            "cost_breakdown": {
+                "parsing": 0.0,
+                "embedding_cost_usd": docling_ingest_metrics.cost_breakdown.get("embedding_cost_usd", 0.0006)
+            }
+        }
+
     direct_payload = existing_report.get("method4_direct_flash") or existing_report.get("direct_gemini", {})
     if norm_method in ("all", "method4") and direct_ingest_metrics:
         direct_payload = {
@@ -477,6 +557,7 @@ def run_benchmark(
         "method1_bigquery": bq_payload,
         "method2_flash_vision": flash_payload,
         "method3_pymupdf_cpu": mupdf_payload,
+        "method3b_docling": docling_payload,
         "method4_direct_flash": direct_payload,
     }
 
@@ -508,6 +589,7 @@ def main():
             "method1 (aliases: bigquery, bq, bigquery-native, 1), "
             "method2 (aliases: flash, flash-vision-md, gemini-flash-md, 2), "
             "method3 (aliases: pymupdf, pymupdf4llm, pymupdf-cpu, 3), "
+            "method3b (aliases: docling, docling-cpu, docling-local, 3b), "
             "method4 (aliases: direct, direct-flash, long-context, 4)"
         )
     )

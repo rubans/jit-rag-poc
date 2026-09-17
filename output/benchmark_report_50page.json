@@ -1,5 +1,5 @@
 {
-  "project_id": "your-gcp-project-id",
+  "project_id": "vertex-ai-poc-416620",
   "document": "data/documents/sample_50page.pdf",
   "num_test_cases": 25,
   "bigquery_native": {
@@ -172,6 +172,30 @@
     "cost_breakdown": {
       "parsing": 0.0,
       "embedding_cost_usd": 0.000622975
+    }
+  },
+  "method3b_docling": {
+    "ingestion_cost_usd": 0.0012169750000000001,
+    "client_ingest_time_s": 249.0,
+    "embedding_ready_time_s": 3.52,
+    "ingestion_time_s": 252.53,
+    "cost_per_query_usd": 7.9e-05,
+    "query_p50_ms": 3596.51,
+    "query_p90_ms": 40714.74,
+    "query_p99_ms": 400340.31,
+    "faithfulness": 0.77,
+    "answer_relevancy": 0.94,
+    "contextual_precision": 0.9,
+    "contextual_recall": 0.92,
+    "contextual_relevancy": 0.88,
+    "document_completeness": 0.75,
+    "early_recall": 0.93,
+    "middle_recall": 0.93,
+    "late_recall": 0.9,
+    "lost_in_middle_degradation_pct": 0.0,
+    "cost_breakdown": {
+      "parsing": 0.0,
+      "embedding_cost_usd": 0.0012169750000000001
     }
   },
   "method4_direct_flash": {

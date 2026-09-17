@@ -33,6 +33,7 @@ wheels/
 .installed.cfg
 *.egg
 .venv/
+.venv*/
 venv/
 ENV/
 env/
@@ -46,10 +47,15 @@ htmlcov/
 .deepeval/
 
 # =====================================================================
-# Ephemeral Benchmark Run Dumps (Keep reports in output/ root)
+# Ephemeral Benchmark Run Dumps & Local Model Caches
 # =====================================================================
 output/**/runs/
+output/docling_extracted/
+output/docling_pipeline/
+output/**/extracted/
 runs/
+.cache/
+huggingface/
 
 # =====================================================================
 # External 3rd-Party Skills (Track only SKILL.md, ignore repo bloat)

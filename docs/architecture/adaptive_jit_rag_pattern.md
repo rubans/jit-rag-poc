@@ -25,13 +25,13 @@ flowchart TD
     
     CheckSize -- "Pages ≤ 15 AND 1-Shot Query" --> Method4["Method 4: Direct Long-Context Flash<br/>• Zero ingestion wait (0s cold start)<br/>• $0.00 upfront setup cost<br/>• Perfect Faithfulness (1.00)"]
     
-    CheckSize -- "Pages 16 to 150 OR Multi-Turn Chat" --> Method3["Method 3: PyMuPDF4LLM (Local CPU)<br/>• Ultra-fast local parse (~1.2s)<br/>• Negligible cost ($0.0006)<br/>• Eliminates 'Lost in Middle' degradation"]
+    CheckSize -- "Pages 16 to 100 (Small/Mid Doc)" --> Method3["Method 3: PyMuPDF4LLM (Local CPU)<br/>• Fast single-CPU in-process parse (~1.2s)<br/>• $0.00 parsing cost ($0.0006 total)<br/>• Avoids cloud orchestration overhead"]
     
-    CheckSize -- "Pages > 150 AND Enterprise SQL Repo" --> CheckStorage{"Target Storage Model"}
+    CheckSize -- "Pages > 100 (Needs Cloud Sharding)" --> CheckStorage{"Target Architecture"}
     
-    CheckStorage -- "Lakehouse / SQL Governed" --> Method1["Method 1: BigQuery Native Zero-Copy<br/>• Document AI Layout Parser<br/>• Autonomous AI.EMBED & AI.SEARCH<br/>• Centralized IAM & compliance"]
+    CheckStorage -- "Distributed Warehouse Sharding" --> Method1["Method 1: BigQuery Native Zero-Copy<br/>• Parallel cloud sharding across BQ slots<br/>• Zero client RAM/OOM risk on 500+ pages<br/>• Distributed AI.EMBED & VECTOR_SEARCH"]
     
-    CheckStorage -- "Ephemeral JIT App" --> GeminiCache["Gemini Native Context Caching<br/>• KV cache saved in fast RAM (TTL 1h)<br/>• 75% input cost discount<br/>• 3x-5x faster TTFT than raw Method 4"]
+    CheckStorage -- "Ephemeral Zero-ETL Cache" --> GeminiCache["Gemini Native Context Caching<br/>• KV cache saved in fast RAM (TTL 1h)<br/>• 75% input cost discount<br/>• 3x-5x faster TTFT than raw Method 4"]
 
     classDef m1 fill:#e8f0fe,stroke:#1a73e8,stroke-width:2px;
     classDef m2 fill:#fce8e6,stroke:#d93025,stroke-width:2px;
@@ -82,7 +82,7 @@ $$\rho_{\text{text}} = \frac{\text{Extracted Character Count}}{\text{Total Page 
 | **Quick Fact Check** | 1–10 pages, digital PDF | **Method 4** *(Direct Flash)* | 0s cold start; \$0.00 upfront cost; 1.00 faithfulness. | Method 3 |
 | **Interactive Document Chat** | 10–100 pages, digital PDF | **Method 3** *(PyMuPDF4LLM)* | Ingests in 6.8s; \$0.0006 setup; 3s query latency; 0% degradation. | Method 4 |
 | **Scanned Receipts & Blueprints** | Scanned / bitmap / handwritten | **Method 2** *(Flash Vision MD)* | Vision OCR reconstructs complex layouts, charts, and tables into clean Markdown. | Method 1 |
-| **Enterprise Data Lakehouse** | Regulatory reports, multi-user | **Method 1** *(BigQuery Native)* | 100% SQL governance, zero client compute, Document AI table extraction, RBAC via IAM. | Method 2 |
+| **Enterprise Data Lakehouse** | Regulatory reports, multi-user, >100 pages | **Method 1** *(BigQuery Native)* | 100% SQL governance, zero client compute, Document AI table extraction, scales throughput on large PDFs, RBAC via IAM. | Method 2 |
 | **Massive Prospectus (>150 pages)** | 150–500 pages, high query volume | **Gemini Context Caching** | Zero chunking overhead; 75% input token discount; 3x faster TTFT. | Method 3 |
 
 ---
@@ -182,3 +182,4 @@ By adopting the Adaptive JIT-RAG pattern over a static single-method setup:
    * Cuts ingestion cost from **\$0.0081 down to \$0.0006** (13x savings) using CPU parsing where vision is redundant.
 3. **vs. Static Method 1 Only**:
    * Prevents spending **\$1.38 per 50 pages** on Document AI for ephemeral, single-user ad-hoc queries.
+

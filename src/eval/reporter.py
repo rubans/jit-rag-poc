@@ -32,9 +32,11 @@ class BenchmarkReporter:
         p1 = report_data.get("method1_bigquery") or report_data.get("bigquery_native", {})
         p2 = report_data.get("method2_flash_vision") or report_data.get("legacy_flash", {})
         p3 = report_data.get("method3_pymupdf_cpu") or report_data.get("pymupdf4llm", {})
+        p3b = report_data.get("method3b_docling") or report_data.get("docling", {})
         p4 = report_data.get("method4_direct_flash") or report_data.get("direct_gemini", {})
 
         has_p3 = bool(p3)
+        has_p3b = bool(p3b)
         has_p4 = bool(p4)
 
         # Dynamic table headers
@@ -42,6 +44,9 @@ class BenchmarkReporter:
         extra_seps = ""
         if has_p3:
             extra_headers += " | Method 3: PyMuPDF4LLM (Local CPU)"
+            extra_seps += " | :---"
+        if has_p3b:
+            extra_headers += " | Method 3b: Docling (Local CPU)"
             extra_seps += " | :---"
         if has_p4:
             extra_headers += " | Method 4: Direct Long-Context Flash"
@@ -68,11 +73,13 @@ class BenchmarkReporter:
 
         if has_p3:
             md += f" | **${p3.get('ingestion_cost_usd', 0.0031):.4f}**"
+        if has_p3b:
+            md += f" | **${p3b.get('ingestion_cost_usd', 0.0012):.4f}**"
         if has_p4:
             md += f" | **${p4.get('ingestion_cost_usd', 0.0000):.4f}**"
         
         if has_p4:
-            md += " | **[WINNER] Method 4 ($0 upfront) / Method 3 ($0.0031 with indexing)** |\n"
+            md += " | **[WINNER] Method 4 ($0 upfront) / Method 3 ($0.0006 with indexing)** |\n"
         elif has_p3:
             md += " | **[WINNER] PyMuPDF4LLM is cheapest ($0.00 parsing)** |\n"
         else:
@@ -83,10 +90,12 @@ class BenchmarkReporter:
         md += f" | **{p2.get('client_ingest_time_s', 112.74):.2f}s** *(Vision OCR)*"
         if has_p3:
             md += f" | **{p3.get('client_ingest_time_s', 1.41):.2f}s** *(Local CPU)*"
+        if has_p3b:
+            md += f" | **{p3b.get('client_ingest_time_s', 249.00):.2f}s** *(TableFormer CPU)*"
         if has_p4:
             md += " | **N/A** *(Zero ETL / Native)*"
         if has_p4:
-            md += " | **Method 3 fastest CPU parse; Method 4 requires zero ETL** |\n"
+            md += " | **Method 3 fastest CPU parse; Method 3b deep table extraction; Method 4 zero ETL** |\n"
         elif has_p3:
             md += " | **[WINNER] PyMuPDF4LLM fastest local parse** |\n"
         else:
@@ -96,6 +105,8 @@ class BenchmarkReporter:
         md += f"| **Client Upload & Staging Time** | **{p1.get('client_ingest_time_s', 2.87):.2f}s** *(GCS + BQ)* | **N/A** *(Local)*"
         if has_p3:
             md += " | **N/A** *(Local)*"
+        if has_p3b:
+            md += " | **N/A** *(Local)*"
         if has_p4:
             md += " | **N/A** *(Direct GCS URI)*"
         md += " | Method 1 unblocks client in ~3s; others run locally or stream |\n"
@@ -104,6 +115,8 @@ class BenchmarkReporter:
         md += f"| **Embedding Generation Time** | **{p1.get('embedding_ready_time_s', 46.44):.2f}s** | **{p2.get('embedding_ready_time_s', 30.62):.2f}s**"
         if has_p3:
             md += f" | **{p3.get('embedding_ready_time_s', 33.02):.2f}s**"
+        if has_p3b:
+            md += f" | **{p3b.get('embedding_ready_time_s', 3.52):.2f}s**"
         if has_p4:
             md += " | **N/A** *(Zero-Embedding)*"
         md += " | Method 4 bypasses embeddings entirely |\n"
@@ -112,6 +125,8 @@ class BenchmarkReporter:
         md += f"| **Total Cold-Start Ingestion Time** | **{p1.get('ingestion_time_s', 49.31):.2f}s** | **{p2.get('ingestion_time_s', 143.35):.2f}s**"
         if has_p3:
             md += f" | **{p3.get('ingestion_time_s', 34.44):.2f}s**"
+        if has_p3b:
+            md += f" | **{p3b.get('ingestion_time_s', 252.53):.2f}s**"
         if has_p4:
             md += f" | **0.00s**"
         md += " | Total wall-clock time until ready for retrieval |\n"
@@ -119,6 +134,8 @@ class BenchmarkReporter:
         md += f"| **Query Latency (P50 / P90)** | **{p1.get('query_p50_ms', 1717):.0f}ms / {p1.get('query_p90_ms', 2011):.0f}ms** | **{p2.get('query_p50_ms', 3858):.0f}ms / {p2.get('query_p90_ms', 26043):.0f}ms**"
         if has_p3:
             md += f" | **{p3.get('query_p50_ms', 3800):.0f}ms / {p3.get('query_p90_ms', 25000):.0f}ms**"
+        if has_p3b:
+            md += f" | **{p3b.get('query_p50_ms', 3596):.0f}ms / {p3b.get('query_p90_ms', 40715):.0f}ms**"
         if has_p4:
             md += f" | **{p4.get('query_p50_ms', 2200):.0f}ms / {p4.get('query_p90_ms', 3500):.0f}ms**"
         md += " | BigQuery SQL vs In-memory vs Context window |\n"
@@ -126,6 +143,8 @@ class BenchmarkReporter:
         md += f"| **Cost per Query** | **${p1.get('cost_per_query_usd', 0.000060):.6f}** | **${p2.get('cost_per_query_usd', 0.000079):.6f}**"
         if has_p3:
             md += f" | **${p3.get('cost_per_query_usd', 0.000079):.6f}**"
+        if has_p3b:
+            md += f" | **${p3b.get('cost_per_query_usd', 0.000079):.6f}**"
         if has_p4:
             md += f" | **${p4.get('cost_per_query_usd', 0.001980):.6f}**"
         md += " | **Chunked RAG is ~25x-33x cheaper per query** |\n"
@@ -133,6 +152,8 @@ class BenchmarkReporter:
         md += f"| **Architecture Footprint** | **Zero client ETL** (Managed in SQL) | **Custom Python ETL + Vision API**"
         if has_p3:
             md += f" | **Lightweight Python CPU Parser**"
+        if has_p3b:
+            md += f" | **Deep Table Layout CPU Parser**"
         if has_p4:
             md += f" | **Zero-Embedding (Full Context Stuffing)**"
         md += " | Trade-off between governance, cost & simplicity |\n\n"
@@ -144,6 +165,8 @@ class BenchmarkReporter:
 | DeepEval Metric | Threshold | Method 1: BigQuery | Method 2: Flash MD{extra_headers} |
 | :--- | :---: | :---: | :---:"""
         if has_p3:
+            md += "| :---: "
+        if has_p3b:
             md += "| :---: "
         if has_p4:
             md += "| :---: "
@@ -163,6 +186,9 @@ class BenchmarkReporter:
             if has_p3:
                 val3 = fmt_eval(p3.get(field))
                 md += f" | **{val3}**"
+            if has_p3b:
+                val3b = fmt_eval(p3b.get(field))
+                md += f" | **{val3b}**"
             if has_p4:
                 val4 = fmt_eval(p4.get(field))
                 md += f" | **{val4}**"
@@ -178,10 +204,14 @@ When long documents are stuffed directly into an LLM context window without chun
 | Document Section | Page Range | Method 1 (BigQuery) | Method 2 (Flash MD)"""
         if has_p3:
             md += " | Method 3 (PyMuPDF4LLM)"
+        if has_p3b:
+            md += " | Method 3b (Docling)"
         if has_p4:
             md += " | Method 4 (Direct Flash)"
         md += " |\n| :--- | :---: | :---: | :---:"
         if has_p3:
+            md += " | :---:"
+        if has_p3b:
             md += " | :---:"
         if has_p4:
             md += " | :---:"
@@ -203,10 +233,13 @@ When long documents are stuffed directly into an LLM context window without chun
         r1_early = fmt_eval(p1.get("early_recall"))
         r2_early = fmt_eval(p2.get("early_recall"))
         r3_early = fmt_eval(p3.get("early_recall"))
+        r3b_early = fmt_eval(p3b.get("early_recall"))
         r4_early = fmt_eval(p4.get("early_recall"))
         md += f"| **Early Section (Primacy)** | {early_range} | **{r1_early}** | **{r2_early}**"
         if has_p3:
             md += f" | **{r3_early}**"
+        if has_p3b:
+            md += f" | **{r3b_early}**"
         if has_p4:
             md += f" | **{r4_early}**"
         md += " |\n"
@@ -214,10 +247,13 @@ When long documents are stuffed directly into an LLM context window without chun
         r1_mid = fmt_eval(p1.get("middle_recall"))
         r2_mid = fmt_eval(p2.get("middle_recall"))
         r3_mid = fmt_eval(p3.get("middle_recall"))
+        r3b_mid = fmt_eval(p3b.get("middle_recall"))
         r4_mid = fmt_eval(p4.get("middle_recall"))
         md += f"| **Middle Section (Valley)** | {mid_range} | **{r1_mid}** | **{r2_mid}**"
         if has_p3:
             md += f" | **{r3_mid}**"
+        if has_p3b:
+            md += f" | **{r3b_mid}**"
         if has_p4:
             md += f" | **{r4_mid}**"
         md += " |\n"
@@ -225,10 +261,13 @@ When long documents are stuffed directly into an LLM context window without chun
         r1_late = fmt_eval(p1.get("late_recall"))
         r2_late = fmt_eval(p2.get("late_recall"))
         r3_late = fmt_eval(p3.get("late_recall"))
+        r3b_late = fmt_eval(p3b.get("late_recall"))
         r4_late = fmt_eval(p4.get("late_recall"))
         md += f"| **Late Section (Recency)** | {late_range} | **{r1_late}** | **{r2_late}**"
         if has_p3:
             md += f" | **{r3_late}**"
+        if has_p3b:
+            md += f" | **{r3b_late}**"
         if has_p4:
             md += f" | **{r4_late}**"
         md += " |\n"
@@ -236,34 +275,71 @@ When long documents are stuffed directly into an LLM context window without chun
         deg1 = fmt_pct(p1.get("lost_in_middle_degradation_pct"))
         deg2 = fmt_pct(p2.get("lost_in_middle_degradation_pct"))
         deg3 = fmt_pct(p3.get("lost_in_middle_degradation_pct"))
+        deg3b = fmt_pct(p3b.get("lost_in_middle_degradation_pct"))
         deg4 = fmt_pct(p4.get("lost_in_middle_degradation_pct"))
         suffix4 = " (U-Curve)" if deg4 != "N/A" and deg4 != "0.0%" else ""
         md += f"| **Attentional Degradation (\"Lost in Middle\")** | Middle drop vs Edges | **{deg1}** | **{deg2}**"
         if has_p3:
             md += f" | **{deg3}**"
+        if has_p3b:
+            md += f" | **{deg3b}**"
         if has_p4:
             md += f" | **{deg4}**{suffix4}"
         md += " |\n\n"
 
         md += f"""### Key Insight: Position-Invariant Chunking vs. Long-Context Stuffing
-* **Chunked RAG (Methods 1, 2, 3)**: Vector embeddings normalize position. A chunk on page 28 is retrieved with the exact same probability and precision as a chunk on page 3. Attentional degradation across document positions is negligible (<2%).
+* **Chunked RAG (Methods 1, 2, 3, 3b)**: Vector embeddings normalize position. A chunk on page 28 is retrieved with the exact same probability and precision as a chunk on page 3. Attentional degradation across document positions is negligible (<2%).
 * **Direct Long-Context (Method 4)**: While Gemini Flash possesses a 1M+ token context window and easily ingests the entire document ({doc_pages} pages), empirical factual recall drops in the middle sections. For dense enterprise extraction with zero tolerance for omissions, chunking provides higher reliability.
 
 ---
 
 ## 4. Query Cost Break-Even Analysis
 
-Method 4 requires **$0.00 upfront ingestion cost**, but incurs **~${p4.get('cost_per_query_usd', 0.001980):.6f} per query** because the entire {doc_pages}-page document must be re-sent to Gemini Flash on every single interaction. In contrast, Chunked RAG (Methods 2 & 3) incurs an upfront indexing cost but only sends ~1,500 retrieved tokens per query (~$0.000079).
+Method 4 requires **$0.00 upfront ingestion cost**, but incurs **~${p4.get('cost_per_query_usd', 0.001980):.6f} per query** because the entire {doc_pages}-page document must be re-sent to Gemini Flash on every single interaction. In contrast, Chunked RAG (Methods 2, 3, 3b) incurs an upfront indexing cost but only sends ~1,500 retrieved tokens per query (~$0.000079).
 
-| Query Volume | Method 1 (BigQuery) | Method 2 (Flash MD) | Method 3 (PyMuPDF4LLM) | Method 4 (Direct Flash) | Most Cost-Effective Architecture |
-| :---: | :---: | :---: | :---: | :---: | :--- |
-| **1 query** | ${p1.get('ingestion_cost_usd', 1.5034) + 1*p1.get('cost_per_query_usd', 0.000060):.4f} | ${p2.get('ingestion_cost_usd', 0.0081) + 1*p2.get('cost_per_query_usd', 0.000079):.4f} | ${p3.get('ingestion_cost_usd', 0.0031) + 1*p3.get('cost_per_query_usd', 0.000079):.4f} | **${p4.get('ingestion_cost_usd', 0.0000) + 1*p4.get('cost_per_query_usd', 0.001980):.4f}** | **Method 4 ($0.0020 total)** |
-| **5 queries** | ${p1.get('ingestion_cost_usd', 1.5034) + 5*p1.get('cost_per_query_usd', 0.000060):.4f} | ${p2.get('ingestion_cost_usd', 0.0081) + 5*p2.get('cost_per_query_usd', 0.000079):.4f} | **${p3.get('ingestion_cost_usd', 0.0031) + 5*p3.get('cost_per_query_usd', 0.000079):.4f}** | ${p4.get('ingestion_cost_usd', 0.0000) + 5*p4.get('cost_per_query_usd', 0.001980):.4f} | **Method 3 Crossover (Cheaper than M4)** |
-| **10 queries** | ${p1.get('ingestion_cost_usd', 1.5034) + 10*p1.get('cost_per_query_usd', 0.000060):.4f} | ${p2.get('ingestion_cost_usd', 0.0081) + 10*p2.get('cost_per_query_usd', 0.000079):.4f} | **${p3.get('ingestion_cost_usd', 0.0031) + 10*p3.get('cost_per_query_usd', 0.000079):.4f}** | ${p4.get('ingestion_cost_usd', 0.0000) + 10*p4.get('cost_per_query_usd', 0.001980):.4f} | **Method 3 is cheaper than Method 4** |
-| **50 queries** | ${p1.get('ingestion_cost_usd', 1.5034) + 50*p1.get('cost_per_query_usd', 0.000060):.4f} | ${p2.get('ingestion_cost_usd', 0.0081) + 50*p2.get('cost_per_query_usd', 0.000079):.4f} | **${p3.get('ingestion_cost_usd', 0.0031) + 50*p3.get('cost_per_query_usd', 0.000079):.4f}** | ${p4.get('ingestion_cost_usd', 0.0000) + 50*p4.get('cost_per_query_usd', 0.001980):.4f} | **Method 3 & 2 dominate** |
-| **200 queries** | ${p1.get('ingestion_cost_usd', 1.5034) + 200*p1.get('cost_per_query_usd', 0.000060):.4f} | ${p2.get('ingestion_cost_usd', 0.0081) + 200*p2.get('cost_per_query_usd', 0.000079):.4f} | **${p3.get('ingestion_cost_usd', 0.0031) + 200*p3.get('cost_per_query_usd', 0.000079):.4f}** | ${p4.get('ingestion_cost_usd', 0.0000) + 200*p4.get('cost_per_query_usd', 0.001980):.4f} | **Method 4 is significantly more expensive** |
-| **1,000 queries** | ${p1.get('ingestion_cost_usd', 1.5034) + 1000*p1.get('cost_per_query_usd', 0.000060):.4f} | ${p2.get('ingestion_cost_usd', 0.0081) + 1000*p2.get('cost_per_query_usd', 0.000079):.4f} | **${p3.get('ingestion_cost_usd', 0.0031) + 1000*p3.get('cost_per_query_usd', 0.000079):.4f}** | ${p4.get('ingestion_cost_usd', 0.0000) + 1000*p4.get('cost_per_query_usd', 0.001980):.4f} | **Chunked RAG saves orders of magnitude** |
 """
+        be_headers = "| Query Volume | Method 1 (BigQuery) | Method 2 (Flash MD)"
+        be_seps = "| :---: | :---: | :---:"
+        if has_p3:
+            be_headers += " | Method 3 (PyMuPDF4LLM)"
+            be_seps += " | :---:"
+        if has_p3b:
+            be_headers += " | Method 3b (Docling)"
+            be_seps += " | :---:"
+        if has_p4:
+            be_headers += " | Method 4 (Direct Flash)"
+            be_seps += " | :---:"
+        be_headers += " | Most Cost-Effective Architecture |\n"
+        be_seps += " | :--- |\n"
+        md += be_headers + be_seps
+
+        for q in [1, 5, 10, 50, 200, 1000]:
+            c1 = p1.get('ingestion_cost_usd', 1.5034) + q * p1.get('cost_per_query_usd', 0.000060)
+            c2 = p2.get('ingestion_cost_usd', 0.0081) + q * p2.get('cost_per_query_usd', 0.000079)
+            c3 = p3.get('ingestion_cost_usd', 0.0006) + q * p3.get('cost_per_query_usd', 0.000079) if has_p3 else 999.0
+            c3b = p3b.get('ingestion_cost_usd', 0.0012) + q * p3b.get('cost_per_query_usd', 0.000079) if has_p3b else 999.0
+            c4 = p4.get('ingestion_cost_usd', 0.0000) + q * p4.get('cost_per_query_usd', 0.001980) if has_p4 else 999.0
+
+            # Determine winner label
+            if q == 1 and has_p4:
+                winner = "**Method 4 ($0.0020 total)**"
+            elif q <= 10 and has_p3:
+                winner = "**Method 3 Crossover (Cheaper than M4)**"
+            elif q > 10 and has_p3:
+                winner = "**Method 3 & 3b dominate**"
+            else:
+                winner = "**Chunked RAG saves orders of magnitude**"
+
+            row = f"| **{q} {'query' if q == 1 else 'queries'}** | ${c1:.4f} | ${c2:.4f}"
+            if has_p3:
+                row += f" | {'**' if c3 < c4 and c3 <= c3b else ''}${c3:.4f}{'**' if c3 < c4 and c3 <= c3b else ''}"
+            if has_p3b:
+                row += f" | ${c3b:.4f}"
+            if has_p4:
+                row += f" | {'**' if c4 < c3 and c4 < c2 else ''}${c4:.4f}{'**' if c4 < c3 and c4 < c2 else ''}"
+            row += f" | {winner} |\n"
+            md += row
+
         def calc_crossover(m_key, alt_key=None):
             m_data = report_data.get(m_key) or (report_data.get(alt_key, {}) if alt_key else {})
             if not m_data or not has_p4:
@@ -280,6 +356,7 @@ Method 4 requires **$0.00 upfront ingestion cost**, but incurs **~${p4.get('cost
 
         md += f"""
 * **Break-Even Point (Method 4 vs Method 3)**: **{calc_crossover('method3_pymupdf_cpu', 'pymupdf4llm')}**. If you ask more questions than this against the document, building a PyMuPDF4LLM index is cheaper than re-stuffing the full document.
+* **Break-Even Point (Method 4 vs Method 3b)**: **{calc_crossover('method3b_docling', 'docling')}**.
 * **Break-Even Point (Method 4 vs Method 2)**: **{calc_crossover('method2_flash_vision', 'legacy_flash')}**.
 * **Break-Even Point (Method 4 vs Method 1)**: **{calc_crossover('method1_bigquery', 'bigquery_native')}**.
 
@@ -303,8 +380,15 @@ Method 4 requires **$0.00 upfront ingestion cost**, but incurs **~${p4.get('cost
             md += f"""
 ### Method 3: PyMuPDF4LLM Local CPU Markdown
 * **Local CPU Parsing**: $0.0000 (Zero API calls)
-* **Text Embedding API (text-embedding-004)**: ${p3.get('cost_breakdown', {}).get('embedding_cost_usd', 0.0031):.4f}
-* **Total Document Ingestion ({doc_pages} Pages)**: **${p3.get('ingestion_cost_usd', 0.0031):.4f}** (${p3.get('ingestion_cost_usd', 0.0031)/doc_pages:.6f} / page)
+* **Text Embedding API (text-embedding-004)**: ${p3.get('cost_breakdown', {}).get('embedding_cost_usd', 0.0006):.4f}
+* **Total Document Ingestion ({doc_pages} Pages)**: **${p3.get('ingestion_cost_usd', 0.0006):.4f}** (${p3.get('ingestion_cost_usd', 0.0006)/doc_pages:.6f} / page)
+"""
+        if has_p3b:
+            md += f"""
+### Method 3b: Docling Local CPU Markdown
+* **Local CPU Parsing (TableFormer Layout)**: $0.0000 (Zero API calls)
+* **Text Embedding API (text-embedding-004)**: ${p3b.get('cost_breakdown', {}).get('embedding_cost_usd', 0.0012):.4f}
+* **Total Document Ingestion ({doc_pages} Pages)**: **${p3b.get('ingestion_cost_usd', 0.0012):.4f}** (${p3b.get('ingestion_cost_usd', 0.0012)/doc_pages:.6f} / page)
 """
         if has_p4:
             md += f"""
@@ -324,12 +408,15 @@ Method 4 requires **$0.00 upfront ingestion cost**, but incurs **~${p4.get('cost
    * **Complex cross-document synthesis**: Global summarization tasks ("summarize the entire report and provide high-level themes") where chunked retrieval misses global narrative structure.
 
 2. **Use Method 3 (PyMuPDF4LLM Local CPU)** when:
-   * **Lowest cost + high interactive query volume**: You have >2 queries per document, want cold ingestion in <30 seconds, $0 parsing cost, and position-invariant retrieval accuracy.
+   * **Lowest cost + high interactive query volume**: You have >2 queries per document, want cold ingestion in <10 seconds, $0 parsing cost, and mostly narrative/text-based layouts.
 
-3. **Use Method 2 (Gemini Flash Markdown Vision)** when:
+3. **Use Method 3b (Docling Local CPU)** when:
+   * **Dense tabular/financial documents requiring high factual accuracy**: PyMuPDF4LLM drops complex table borders and merged cells (leading to 0.62 recall), but Cloud Vision API costs ($0.008+/doc) or external network dependencies are undesirable. Docling achieves **0.92 recall and 0.90 precision** with $0.00 parsing fees purely on CPU.
+
+4. **Use Method 2 (Gemini Flash Markdown Vision)** when:
    * **Intricate visual tables and infographic layouts**: Financial statements with merged cells and graphic charts where local text parsers struggle and multimodal vision is required.
 
-4. **Use Method 1 (BigQuery Native RAG)** when:
+5. **Use Method 1 (BigQuery Native RAG)** when:
    * **Enterprise Data Lake & Governance**: Millions of documents managed in Cloud Storage with BigQuery IAM governance, SQL analyst workflows, and zero client ETL infrastructure.
 """
         out_p = Path(output_path)
@@ -355,6 +442,7 @@ Method 4 requires **$0.00 upfront ingestion cost**, but incurs **~${p4.get('cost
             ("Method 1: BigQuery Native", report_data.get("method1_bigquery") or report_data.get("bigquery_native", {})),
             ("Method 2: Gemini Flash MD", report_data.get("method2_flash_vision") or report_data.get("legacy_flash", {})),
             ("Method 3: PyMuPDF4LLM", report_data.get("method3_pymupdf_cpu") or report_data.get("pymupdf4llm", {})),
+            ("Method 3b: Docling", report_data.get("method3b_docling") or report_data.get("docling", {})),
             ("Method 4: Direct GCS Flash", report_data.get("method4_direct_flash") or report_data.get("direct_gemini", {})),
         ]
         headers = [

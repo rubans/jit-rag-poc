@@ -118,18 +118,19 @@ For the full architectural specification, classification heuristics, and referen
                     Use METHOD 4                  Are there complex tables,
                (Direct GCS Long-Context)          charts & visual layouts?
                • $0.00 upfront ingest                     /            \
-               • 0s cold start latency                 YES              NO
+               • 0s cold-start latency                 YES              NO (Digital PDF)
                • Perfect Faithfulness (1.00)           /                  \
-                                              Use METHOD 2           Does it require enterprise
-                                       (Gemini Flash Vision MD)      SQL governance & lakehouse?
+                                              Use METHOD 2           Large doc (>100 pages) needing
+                                       (Gemini Flash Vision MD)      cloud scale & parallel sharding?
                                            • Best visual recall             /            \
-                                           • 0.94 Recall / 0.95 Relevancy YES             NO
-                                                                          /                  \
+                                           • 0.94 Recall / 0.95 Relevancy YES              NO (<100 pgs)
+                                           • Multimodal table OCR         /                  \
                                                                  Use METHOD 1            Use METHOD 3
                                                                (BigQuery Native)       (PyMuPDF4LLM CPU)
-                                                               • Document AI Parser    • $0.0006 ingest cost
-                                                               • SQL & IAM governed    • 6.8s fast cold start
-                                                               • Zero client ETL       • Position-invariant recall
+                                                               • Distributed BQ slots  • Sub-7s cold start
+                                                               • Parallel DocAI shard  • $0.00 parsing cost
+                                                               • Zero client RAM/OOM   • Fast single-CPU parse
+                                                               • Scales on 500+ pages  • Avoids cloud overhead
 ```
 
 ---
