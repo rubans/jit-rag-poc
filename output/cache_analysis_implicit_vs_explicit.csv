@@ -1,0 +1,6 @@
+Document,Strategy,Method Key,Tokens,Test Cases,Cache Hit Rate (%),Avg Cached Tokens,Cost Per Query (USD),Query Latency P50 (ms),Query Latency P90 (ms),Faithfulness,Contextual Recall,Early Recall,Middle Recall,Late Recall,Lost in Middle Degradation (%),Storage Fee (USD)
+sample_50page.pdf,Stateless Implicit,method4,26000,25,0.0%,0,0.001995,7068,19925,1.00,0.84,0.77,0.84,0.91,0.0%,0.00
+sample_50page.pdf,Stateful Session Implicit,method4b,26000,25,67.6%,19562,0.000984,7499,53945,1.00,0.86,0.83,0.83,0.93,5.8%,0.00
+bp_annual_report_2023.pdf,Stateless Un-cached,method4,211719,15,0.0%,0,0.015920,40481,48228,1.00,0.86,0.88,0.80,0.93,11.2%,0.00
+bp_annual_report_2023.pdf,Explicit Context Caching,method4c,211719,15,93.3%,197604,0.004010,39382,64435,1.00,0.81,0.87,0.69,0.93,23.8%,0.00
+

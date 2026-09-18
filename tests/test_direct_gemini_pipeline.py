@@ -40,7 +40,38 @@ def test_direct_gemini_pipeline_ingest_and_query(tmp_path):
     assert len(results) == 1
     assert results[0].score == 1.0
     assert q_metrics.cost_breakdown["input_tokens"] == 25000
+    assert q_metrics.cost_breakdown["cached_tokens"] == 0
+    assert q_metrics.cost_breakdown["cache_hit_rate_pct"] == 0.0
     assert q_metrics.total_cost_usd > 0.0
+
+
+def test_direct_gemini_implicit_cache_measurement(tmp_path):
+    pipeline = DirectGeminiFlashRAGPipeline(
+        project_id="test-project",
+        model_name="gemini-3.8-flash",
+        work_dir=str(tmp_path / "direct_work")
+    )
+
+    mock_resp = MagicMock()
+    mock_resp.text = "Q3 Operating Income was $12.4 billion."
+    mock_resp.usage_metadata.prompt_token_count = 30000
+    mock_resp.usage_metadata.candidates_token_count = 50
+    mock_resp.usage_metadata.cached_content_token_count = 24000  # 80% cache hit
+
+    pipeline.client = MagicMock()
+    pipeline.client.models.generate_content.return_value = mock_resp
+    pipeline.pdf_part = MagicMock()
+
+    answer, results, q_metrics = pipeline.query("What was operating income?")
+    assert "$12.4 billion" in answer
+    assert q_metrics.cost_breakdown["input_tokens"] == 30000
+    assert q_metrics.cost_breakdown["cached_tokens"] == 24000
+    assert q_metrics.cost_breakdown["uncached_tokens"] == 6000
+    assert q_metrics.cost_breakdown["cache_hit_rate_pct"] == 80.0
+    
+    # Verify cached tokens receive the 75% discount (cost is lower than full uncached)
+    full_uncached_cost = (30000 / 1_000_000.0) * 0.075 + (50 / 1_000_000.0) * 0.30
+    assert q_metrics.total_cost_usd < full_uncached_cost
 
 
 def test_position_stratified_metrics_and_completeness():
@@ -114,7 +145,53 @@ def test_4way_reporter_generation(tmp_path):
     }
     md = BenchmarkReporter.generate_markdown_report(sample_data, str(report_file))
     assert report_file.exists()
-    assert "Method 4: Direct Long-Context Flash" in md
+    assert "Method 4: Direct Flash" in md
     assert "Lost in the Middle" in md
     assert "Break-Even Point" in md
+
+
+def test_direct_gemini_explicit_cache(tmp_path):
+    dummy_pdf = tmp_path / "sample_bp.pdf"
+    dummy_pdf.write_bytes(b"%PDF-1.4 large 392-page enterprise pdf binary stream")
+
+    pipeline = DirectGeminiFlashRAGPipeline(
+        project_id="test-project",
+        model_name="gemini-3.8-flash",
+        work_dir=str(tmp_path / "direct_work"),
+        explicit_cache=True,
+        cache_ttl="600s"
+    )
+
+    mock_client = MagicMock()
+    mock_cache = MagicMock()
+    mock_cache.name = "cachedContents/test_cache_12345"
+    mock_client.caches.create.return_value = mock_cache
+
+    mock_resp = MagicMock()
+    mock_resp.text = "BP reported upstream production of 1,450 mboe/d."
+    mock_resp.usage_metadata.prompt_token_count = 210000
+    mock_resp.usage_metadata.candidates_token_count = 60
+    mock_resp.usage_metadata.cached_content_token_count = 209950  # 99.98% cache hit
+    mock_client.models.generate_content.return_value = mock_resp
+
+    pipeline.client = mock_client
+    pipeline.pdf_part = MagicMock()
+
+    # Test explicit cache creation during ingest
+    metrics = pipeline.ingest(str(dummy_pdf))
+    assert pipeline.cached_content is not None
+    assert pipeline.cached_content.name == "cachedContents/test_cache_12345"
+    assert metrics.cost_breakdown["explicit_cache_name"] == "cachedContents/test_cache_12345"
+    mock_client.caches.create.assert_called_once()
+
+    # Test query using explicit cache
+    answer, results, q_metrics = pipeline.query("What was upstream production?")
+    assert "1,450 mboe/d" in answer
+    assert q_metrics.cost_breakdown["cached_tokens"] == 209950
+    assert q_metrics.cost_breakdown["cache_hit_rate_pct"] > 99.0
+
+    # Test explicit cache cleanup
+    pipeline.cleanup()
+    mock_client.caches.delete.assert_called_once_with(name="cachedContents/test_cache_12345")
+    assert pipeline.cached_content is None
 

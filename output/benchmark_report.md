@@ -15,9 +15,10 @@
 | **Client Upload & Staging Time** | **41.69s** *(GCS + BQ)* | **N/A** *(Local)* | **N/A** *(Local)* | **N/A** *(Local)* | **N/A** *(Direct GCS URI)* | Method 1 unblocks client in ~3s; others run locally or stream |
 | **Embedding Generation Time** | **41.27s** | **6.92s** | **5.60s** | **3.52s** | **N/A** *(Zero-Embedding)* | Method 4 bypasses embeddings entirely |
 | **Total Cold-Start Ingestion Time** | **84.25s** | **92.00s** | **6.84s** | **252.53s** | **0.00s** | Total wall-clock time until ready for retrieval |
-| **Query Latency (P50 / P90)** | **4748ms / 13838ms** | **3007ms / 6408ms** | **23108ms / 151298ms** | **3597ms / 40715ms** | **37135ms / 199734ms** | BigQuery SQL vs In-memory vs Context window |
+| **Query Latency (P50 / P90)** | **4748ms / 13838ms** | **3007ms / 6408ms** | **23108ms / 151298ms** | **3597ms / 40715ms** | **6717ms / 22511ms** | BigQuery SQL vs In-memory vs Context window |
 | **Cost per Query** | **$0.000060** | **$0.000079** | **$0.000079** | **$0.000079** | **$0.001995** | **Chunked RAG is ~25x-33x cheaper per query** |
 | **Architecture Footprint** | **Zero client ETL** (Managed in SQL) | **Custom Python ETL + Vision API** | **Lightweight Python CPU Parser** | **Deep Table Layout CPU Parser** | **Zero-Embedding (Full Context Stuffing)** | Trade-off between governance, cost & simplicity |
+| **Context Cache Hit Rate** | **N/A** *(Chunked Index)* | **N/A** *(Chunked Index)* | **N/A** *(Chunked Index)* | **N/A** *(Chunked Index)* | **13.7%** *(Avg 3583 tokens)* | Measures TPU prefix cache reuse on repeat document queries |
 
 ---
 
@@ -26,11 +27,11 @@
 | DeepEval Metric | Threshold | Method 1: BigQuery | Method 2: Flash MD | Method 3: PyMuPDF4LLM (Local CPU) | Method 3b: Docling (Local CPU) | Method 4: Direct Long-Context Flash |
 | :--- | :---: | :---: | :---:| :---: | :---: | :---: |
 | **Faithfulness (Hallucination avoidance)** | 0.70 | **0.67** | **0.79** | **0.58** | **0.77** | **1.00** |
-| **Answer Relevancy** | 0.70 | **0.84** | **0.95** | **0.82** | **0.94** | **0.96** |
-| **Contextual Precision (Rank quality)** | 0.70 | **0.86** | **0.90** | **0.86** | **0.90** | **0.89** |
-| **Contextual Recall (Fact coverage)** | 0.70 | **0.79** | **0.94** | **0.62** | **0.92** | **0.87** |
+| **Answer Relevancy** | 0.70 | **0.84** | **0.95** | **0.82** | **0.94** | **0.99** |
+| **Contextual Precision (Rank quality)** | 0.70 | **0.86** | **0.90** | **0.86** | **0.90** | **0.90** |
+| **Contextual Recall (Fact coverage)** | 0.70 | **0.79** | **0.94** | **0.62** | **0.92** | **0.89** |
 | **Contextual Relevancy (Signal-to-noise)** | 0.70 | **0.80** | **0.88** | **0.88** | **0.88** | **0.88** |
-| **Document Completeness (Entity extraction)** | 0.70 | **0.66** | **0.79** | **0.58** | **0.75** | **0.82** |
+| **Document Completeness (Entity extraction)** | 0.70 | **0.66** | **0.79** | **0.58** | **0.75** | **0.85** |
 
 ---
 
@@ -40,10 +41,10 @@ When long documents are stuffed directly into an LLM context window without chun
 
 | Document Section | Page Range | Method 1 (BigQuery) | Method 2 (Flash MD) | Method 3 (PyMuPDF4LLM) | Method 3b (Docling) | Method 4 (Direct Flash) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Early Section (Primacy)** | Pages 1–15 (9 TCs) | **0.68** | **0.92** | **0.63** | **0.93** | **0.89** |
-| **Middle Section (Valley)** | Pages 16–35 (8 TCs) | **0.87** | **0.97** | **0.64** | **0.93** | **0.78** |
-| **Late Section (Recency)** | Pages 36–50 (8 TCs) | **0.83** | **0.93** | **0.58** | **0.90** | **0.94** |
-| **Attentional Degradation ("Lost in Middle")** | Middle drop vs Edges | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **14.5%** (U-Curve) |
+| **Early Section (Primacy)** | Pages 1–15 (9 TCs) | **0.68** | **0.92** | **0.63** | **0.93** | **0.92** |
+| **Middle Section (Valley)** | Pages 16–35 (8 TCs) | **0.87** | **0.97** | **0.64** | **0.93** | **0.80** |
+| **Late Section (Recency)** | Pages 36–50 (8 TCs) | **0.83** | **0.93** | **0.58** | **0.90** | **0.96** |
+| **Attentional Degradation ("Lost in Middle")** | Middle drop vs Edges | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **14.8%** (U-Curve) |
 
 ### Key Insight: Position-Invariant Chunking vs. Long-Context Stuffing
 * **Chunked RAG (Methods 1, 2, 3, 3b)**: Vector embeddings normalize position. A chunk on page 28 is retrieved with the exact same probability and precision as a chunk on page 3. Attentional degradation across document positions is negligible (<2%).
